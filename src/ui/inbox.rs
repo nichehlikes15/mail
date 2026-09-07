@@ -19,7 +19,11 @@ impl Inbox {
         };
 
         cx.observe(&state, |this , state, cx| {
-            let account = state.read(cx).temp_email.clone();
+            let account = {
+                let state = state.read(cx);
+
+                state.current_temp_email.and_then(|index| state.temp_email.get(index)).cloned()
+            };
 
             if let Some(account) = account {
                 this.start_mail_listener(account, cx);
@@ -113,7 +117,7 @@ impl Inbox {
 }
 
 impl Render for Inbox {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .w_full()
             .h_full()
@@ -134,14 +138,20 @@ impl Render for Inbox {
                         div()
                             .text_size(px(20.0))
                             .text_color(rgb(0xffffff))
-                            .child("Inbox"),
+                            .child(format!(
+                                "Inbox - {}",
+                                self.state.read(cx).current_temp_email.and_then(|index| {
+                                        self.state.read(cx).temp_email.get(index).map(|email| email.address.as_str())
+                                    })
+                                    .unwrap_or("")
+                            )),
                     )
-                    .child(
+                    /*.child(
                         svg()
                             .path(include_str!("../../assets/images/email.svg"))
                             .w(px(18.0))
                             .h(px(18.0)),
-                    ),
+                    ),*/
             )
             // Email list
             .child(

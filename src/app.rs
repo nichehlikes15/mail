@@ -1,8 +1,5 @@
-use gpui::{App, Context, Entity, Global, Window, WindowOptions, div, prelude::*, px, rgb, size};
-use std::{
-    ops::{Deref, DerefMut},
-    sync::Arc,
-};
+use gpui::{App, Context, Entity, Window, WindowOptions, div, prelude::*, px, rgb, size};
+//use std::{ops::{Deref, DerefMut},sync::Arc,};
 
 use crate::models::TempEmail;
 use crate::ui::{Inbox, Sidebar, TopBar};
@@ -16,7 +13,8 @@ pub struct MailApp {
 
 #[derive(Clone, Debug)]
 pub struct AppState {
-    pub temp_email: Option<TempEmail>,
+    pub temp_email: Vec<TempEmail>, 
+    pub current_temp_email: Option<usize>,
 }
 
 impl MailApp {
@@ -37,7 +35,7 @@ impl MailApp {
                 ..Default::default()
             },
             |_, cx| {
-                let state = cx.new(|_| AppState { temp_email: None });
+                let state = cx.new(|_| AppState { temp_email: Vec::new(), current_temp_email: None,});
                 let sidebar = cx.new(|_| Sidebar {
                     state: state.clone(),
                 });

@@ -6,3 +6,4 @@
 - Gmail/Yahoo Oauth
 - Hover effects
 - Imcoming email notfication (Customizamble per emaill)
+- Add alerts

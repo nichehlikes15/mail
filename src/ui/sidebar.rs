@@ -1,6 +1,6 @@
 use gpui::{Entity, Window, div, prelude::*, px, rgb, svg};
 
-use crate::models::{TempEmail, create_account};
+use crate::models::{create_account};
 pub struct Sidebar {
     pub state: Entity<crate::app::AppState>,
 }
@@ -8,6 +8,16 @@ pub struct Sidebar {
 impl Render for Sidebar {
     fn render(&mut self, _window: &mut Window, root_cx: &mut Context<Self>) -> impl IntoElement {
         let app_state = self.state.clone();
+        let temporary_emails = self.state.read(root_cx).temp_email.iter().map(|email| {
+                div()
+                    .px(px(8.0))
+                    .py(px(6.0))
+                    .text_size(px(12.0))
+                    .text_color(rgb(0xaaaaaa))
+                    .bg(rgb(0x181818))
+                    .child(email.address.clone())
+            }).collect::<Vec<_>>();
+
         div()
             .w(px(360.0))
             .h_full()
@@ -46,15 +56,12 @@ impl Render for Sidebar {
                             .flex()
                             .items_center()
                             .gap(px(8.0))
-                            .child(
+                            /*.child(
                                 svg()
-                                    .external_path(concat!(env!(
-                                        "CARGO_MANIFEST_DIR",
-                                        "/assets/images/email.svg"
-                                    )))
-                                    .w(px(180.0))
-                                    .h(px(180.0)),
-                            )
+                                    .path(include_str!("../../assets/images/test.svg"))
+                                    .w(px(18.0))
+                                    .h(px(18.0)),
+                            )*/
                             .child(
                                 div()
                                     .text_size(px(14.0))
@@ -103,30 +110,15 @@ impl Render for Sidebar {
                             .text_color(rgb(0xffffff))
                             .child("Temp Emails"),
                     )
-                    // Tree
+
+                    // Temp Emails tree
                     .child(
                         div()
                             .ml(px(8.0))
                             .pl(px(14.0))
                             .border_l(px(1.0))
                             .border_color(rgb(0x3a3a3a))
-                            .child(
-                                div()
-                                    .px(px(8.0))
-                                    .py(px(6.0))
-                                    .text_size(px(12.0))
-                                    .text_color(rgb(0xaaaaaa))
-                                    .bg(rgb(0x181818))
-                                    .child("metropolitanemelyne@web-library.net"),
-                            )
-                            .child(
-                                div()
-                                    .px(px(8.0))
-                                    .py(px(6.0))
-                                    .text_size(px(12.0))
-                                    .text_color(rgb(0xaaaaaa))
-                                    .child("email2@mail.tm"),
-                            ),
+                            .children(temporary_emails),
                     ),
             )
             .child(
@@ -137,20 +129,15 @@ impl Render for Sidebar {
                     .cursor_pointer()
                     .on_click(root_cx.listener(move |_this, _event, _window, cx| {
                         println!("Generate temporary email clicked!");
+
                         let app_state = app_state.clone();
                         cx.spawn(async move |_this, cx2| {
                             match create_account().await {
                                 Ok(email) => {
-                                    // cx2.update(|cx| {
-                                    //     cx.set_global::<crate::app::TempEmailToken>(
-                                    //         TempEmailToken(std::sync::Arc::new(email.clone())),
-                                    //     );
-                                    //     cx.notify(entity_id);
-                                    // });
-                                    app_state.update(cx2, |state, thecx| {
-                                        state.temp_email = Some(email);
-
-                                        thecx.notify();
+                                    app_state.update(cx2, |state, cx| {
+                                        state.temp_email.push(email);
+                                        state.current_temp_email = Some(state.temp_email.len() - 1);
+                                        cx.notify();
                                     });
                                 }
                                 Err(error) => {
