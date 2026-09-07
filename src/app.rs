@@ -11,7 +11,12 @@ pub struct MailApp {
     pub sidebar: Entity<Sidebar>,
     pub topbar: Entity<TopBar>,
     pub inbox: Entity<Inbox>,
-    pub temp_email: Option<TempEmail>
+    pub state: Entity<AppState>,
+}
+
+#[derive(Clone, Debug)]
+pub struct AppState {
+    pub temp_email: Option<TempEmail>,
 }
 
 impl MailApp {
@@ -32,13 +37,13 @@ impl MailApp {
                 ..Default::default()
             },
             |_, cx| {
-                let sidebar = cx.new(|_| Sidebar);
+                let state = cx.new(|_| AppState { temp_email: None });
+                let sidebar = cx.new(|_| Sidebar {
+                    state: state.clone(),
+                });
                 let topbar = cx.new(|_| TopBar);
 
-                let inbox = cx.new(|_| Inbox {
-                    emails: Vec::new(),
-                    loading: false,
-                });
+                let inbox = cx.new(|cx| Inbox::new(state.clone(), cx));
 
                 inbox.update(cx, |inbox, cx| {
                     inbox.refresh(cx);
@@ -48,6 +53,7 @@ impl MailApp {
                     sidebar,
                     topbar,
                     inbox,
+                    state,
                 })
             },
         )

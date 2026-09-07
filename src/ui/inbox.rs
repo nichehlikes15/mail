@@ -1,27 +1,33 @@
+use crate::app::AppState;
+use crate::{
+    app::MailApp,
+    models::{Email, TempEmail, get_mail},
+};
 use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb};
-
-use crate::{app::MailApp, models::{Email, TempEmail, get_mail}};
 
 pub struct Inbox {
     pub emails: Vec<Email>,
     pub loading: bool,
-    pub mail_app: Entity<MailApp>
+    pub state: Entity<AppState>,
 }
 
 impl Inbox {
     pub fn refresh(&mut self, cx: &mut Context<Self>) {
-
         self.loading = true;
+
         cx.notify();
-        let acc = self.mail_app.update(cx, |app, cx| app.temp_email.clone());
+
+        let acc = self.state.read(cx).temp_email.clone();
+
         cx.spawn(async move |this, cx| {
             if let Some(account) = acc {
                 match get_mail(&account).await {
                     Ok(emails) => {
-                        this.update(cx, |inbox, cx2| {
+                        this.update(cx, |inbox, cx| {
                             inbox.emails = emails;
                             inbox.loading = false;
-                            cx2.notify();
+
+                            cx.notify();
                         })?;
                     }
 
@@ -30,15 +36,41 @@ impl Inbox {
 
                         this.update(cx, |inbox, cx| {
                             inbox.loading = false;
+
                             cx.notify();
                         })?;
                     }
                 }
+            } else {
+                this.update(cx, |inbox, cx| {
+                    inbox.loading = false;
+
+                    cx.notify();
+                })?;
             }
 
             Ok::<(), anyhow::Error>(())
         })
         .detach();
+    }
+}
+
+impl Inbox {
+    pub fn new(state: Entity<crate::app::AppState>, cx: &mut Context<Self>) -> Inbox {
+        cx.observe(&state, |this, state, cx| {
+            if state.read(cx).temp_email.is_some() {
+                this.refresh(cx);
+            }
+        })
+        .detach();
+
+        Self {
+            emails: Vec::new(),
+
+            loading: false,
+
+            state,
+        }
     }
 }
 

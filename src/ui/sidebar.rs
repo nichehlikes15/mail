@@ -1,12 +1,13 @@
-use gpui::{Window, div, prelude::*, px, rgb, svg, Entity};
+use gpui::{Entity, Window, div, prelude::*, px, rgb, svg};
 
-use crate::models::create_account;
+use crate::models::{TempEmail, create_account};
 pub struct Sidebar {
-    pub mail_app: Entity<crate::MailApp>
+    pub state: Entity<crate::app::AppState>,
 }
 
 impl Render for Sidebar {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, root_cx: &mut Context<Self>) -> impl IntoElement {
+        let app_state = self.state.clone();
         div()
             .w(px(360.0))
             .h_full()
@@ -131,19 +132,25 @@ impl Render for Sidebar {
                     .p(px(10.0))
                     .bg(rgb(0x222222))
                     .cursor_pointer()
-                    .on_click(cx.listener(|_this, _event, _window, cx| {
+                    .on_click(root_cx.listener(move |_this, _event, _window, cx| {
                         println!("Generate temporary email clicked!");
-
+                        let app_state = app_state.clone();
                         cx.spawn(async move |_this, cx2| {
                             match create_account().await {
                                 Ok(email) => {
-                                    cx2.update(|cx| {
-                                        cx.set_global::<crate::app::TempEmailToken>(
-                                            TempEmailToken(std::sync::Arc::new(email.clone())),
-                                        );
-                                        cx.notify(entity_id);
+                                    // cx2.update(|cx| {
+                                    //     cx.set_global::<crate::app::TempEmailToken>(
+                                    //         TempEmailToken(std::sync::Arc::new(email.clone())),
+                                    //     );
+                                    //     cx.notify(entity_id);
+                                    // });
+                                    app_state.update(cx2, |state, thecx| {
+                                        state.temp_email = Some(TempEmail {
+                                            address: email.address,
+                                            password: email.password,
+                                        });
+                                        thecx.notify();
                                     });
-                                    println!("Created: {} {}", email.address, email.password);
                                 }
                                 Err(error) => {
                                     println!("Failed: {}", error);
