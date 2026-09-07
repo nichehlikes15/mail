@@ -3,7 +3,7 @@ use crate::{
     app::MailApp,
     models::{Email, TempEmail, get_mail},
 };
-use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb};
+use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb, svg};
 
 pub struct Inbox {
     pub emails: Vec<Email>,
@@ -97,6 +97,12 @@ impl Render for Inbox {
                             .text_size(px(20.0))
                             .text_color(rgb(0xffffff))
                             .child("Inbox"),
+                    )
+                    .child(
+                        svg()
+                            .path(include_str!("../../assets/images/email.svg"))
+                            .w(px(18.0))
+                            .h(px(18.0)),
                     ),
             )
             // Email list

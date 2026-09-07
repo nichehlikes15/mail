@@ -21,7 +21,7 @@ pub struct AppState {
 
 impl MailApp {
     pub fn open(cx: &mut App) {
-        let font = include_bytes!("assets/fonts/Lilex[wght].ttf");
+        let font = include_bytes!("../assets/fonts/Lilex[wght].ttf");
 
         cx.text_system()
             .add_fonts(vec![std::borrow::Cow::Borrowed(font.as_slice())])

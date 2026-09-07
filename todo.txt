@@ -1,0 +1,8 @@
+- Add generated emails to sidebar
+- Refresh emails using mercure
+- Macros (Background, Scheladed Emails e.g)
+- Folders
+- Add images/svg to titles
+- Gmail/Yahoo Oauth
+- Hover effects
+- Imcoming email notfication (Customizamble per emaill)

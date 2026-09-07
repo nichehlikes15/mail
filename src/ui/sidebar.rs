@@ -48,9 +48,12 @@ impl Render for Sidebar {
                             .gap(px(8.0))
                             .child(
                                 svg()
-                                    .path(include_str!("../assets/images/email.svg"))
-                                    .w(px(18.0))
-                                    .h(px(18.0)),
+                                    .external_path(concat!(env!(
+                                        "CARGO_MANIFEST_DIR",
+                                        "/assets/images/email.svg"
+                                    )))
+                                    .w(px(180.0))
+                                    .h(px(180.0)),
                             )
                             .child(
                                 div()
