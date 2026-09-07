@@ -148,10 +148,8 @@ impl Render for Sidebar {
                                     //     cx.notify(entity_id);
                                     // });
                                     app_state.update(cx2, |state, thecx| {
-                                        state.temp_email = Some(TempEmail {
-                                            address: email.address,
-                                            password: email.password,
-                                        });
+                                        state.temp_email = Some(email);
+
                                         thecx.notify();
                                     });
                                 }

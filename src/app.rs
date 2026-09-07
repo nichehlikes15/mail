@@ -45,10 +45,6 @@ impl MailApp {
 
                 let inbox = cx.new(|cx| Inbox::new(state.clone(), cx));
 
-                inbox.update(cx, |inbox, cx| {
-                    inbox.refresh(cx);
-                });
-
                 cx.new(|_| MailApp {
                     sidebar,
                     topbar,

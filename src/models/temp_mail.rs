@@ -44,6 +44,14 @@ struct TokenResponse {
 pub struct TempEmail {
     pub address: String,
     pub password: String,
+    pub id: String,
+    pub token: String
+}
+
+#[derive(Debug, Deserialize)]
+struct AccountResponse {
+    id: String,
+    address: String,
 }
 
 fn random_string(length: usize) -> String {
@@ -81,9 +89,53 @@ pub async fn create_account() -> Result<TempEmail, Box<dyn std::error::Error>> {
         return Err(format!("Failed to create account: {} - {}", status, body).into());
     }
 
-    println!("Temporary email created: {}", address);
 
-    Ok(TempEmail { address, password })
+
+    let token_response = client
+        .post("https://api.mail.tm/token")
+        .json(&json!({
+            "address": address,
+            "password": password
+        }))
+        .send()
+        .await?;
+
+    if !token_response.status().is_success() {
+        let status = token_response.status();
+        let body = token_response.text().await?;
+
+        return Err(format!(
+            "Failed to login to Mail.tm: {} - {}",
+            status,
+            body
+        )
+        .into());
+    }
+
+    let account: AccountResponse = response.json().await?;
+
+    println!(
+        "Temporary email created: {}",
+        account.address
+    );
+
+    println!(
+        "Account ID: {}",
+        account.id
+    );
+
+    let token: TokenResponse = token_response
+        .json()
+        .await?;
+
+    println!("Mail.tm token acquired");
+
+    Ok(TempEmail {
+        address,
+        password,
+        id: account.id,
+        token: token.token,
+    })
 }
 
 async fn get_token(

@@ -1,9 +1,8 @@
 use crate::app::AppState;
-use crate::{
-    app::MailApp,
-    models::{Email, TempEmail, get_mail},
-};
+use crate::{models::{Email, get_mail},};
 use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb, svg};
+use reqwest_eventsource::{Event, EventSource};
+use futures_util::StreamExt;
 
 pub struct Inbox {
     pub emails: Vec<Email>,
@@ -12,65 +11,104 @@ pub struct Inbox {
 }
 
 impl Inbox {
-    pub fn refresh(&mut self, cx: &mut Context<Self>) {
-        self.loading = true;
+    pub fn new(state: Entity<AppState>, cx: &mut Context<Self>) -> Inbox {
+        let inbox = Self {
+            emails: Vec::new(),
+            loading: false,
+            state: state.clone()
+        };
 
+        cx.observe(&state, |this , state, cx| {
+            let account = state.read(cx).temp_email.clone();
+
+            if let Some(account) = account {
+                this.start_mail_listener(account, cx);
+            }
+        })
+        .detach();
+
+        inbox
+    }
+
+    fn start_mail_listener(&mut self, account: crate::models::TempEmail, cx: &mut Context<Self>) {
+        self.loading = true;
         cx.notify();
 
-        let acc = self.state.read(cx).temp_email.clone();
+        let state = self.state.clone();
 
         cx.spawn(async move |this, cx| {
-            if let Some(account) = acc {
-                match get_mail(&account).await {
-                    Ok(emails) => {
-                        this.update(cx, |inbox, cx| {
-                            inbox.emails = emails;
-                            inbox.loading = false;
+            match get_mail(&account).await {
+                Ok(emails) => {
+                    this.update(cx, |inbox, cx| {
+                        inbox.emails = emails;
+                        inbox.loading = false;
+                        cx.notify();
+                    })?;
+                }
 
-                            cx.notify();
-                        })?;
+                Err(error) => {
+                    eprintln!("Failed to retrieve mail: {}", error);
+
+                    this.update(cx, |inbox, cx| {
+                        inbox.loading = false;
+                        cx.notify();
+                    })?;
+                }
+            }
+
+            let url = format!("https://mercure.mail.tm/.well-known/mercure?topic=/accounts/{}", account.id);
+
+            println!("Conntecting to Mercure..");
+            println!("Topic: /accounts/{}", account.id);
+
+            let client = reqwest::Client::new();
+
+            let request = client.get(&url).header(
+                reqwest::header::AUTHORIZATION,
+                format!("Bearer {}", account.token)
+            ).header(
+                reqwest::header::ACCEPT,
+                "text/event-stream"
+            );
+
+            let mut events = EventSource::new(request)?;
+
+            while let Some(event) = events.next().await {
+                match event {
+                    Ok(Event::Open) => {
+                        println!("Mercure connection opened");
+                    }
+
+                    Ok(Event::Message(message)) => {
+                        println!("Mercure event received: {}", message.event);
+                        println!("Mercure data: {}", message.data);
+
+                        match get_mail(&account).await {
+                            Ok(emails) => {
+                                this.update(cx, |inbox, cx| {
+                                    inbox.emails = emails;
+                                    inbox.loading = false;
+                                    cx.notify();
+                                })?;
+                            }
+
+                            Err(error) => {
+                                eprintln!("Failed to refresh mail after mercure event: {}", error);
+                            }
+                        }
                     }
 
                     Err(error) => {
-                        eprintln!("Failed to retrieve mail: {}", error);
-
-                        this.update(cx, |inbox, cx| {
-                            inbox.loading = false;
-
-                            cx.notify();
-                        })?;
+                        eprintln!("Mercure connection error: {}", error);
                     }
                 }
-            } else {
-                this.update(cx, |inbox, cx| {
-                    inbox.loading = false;
-
-                    cx.notify();
-                })?;
             }
+            println!("Mercure connection closed");
 
+            let _ = state;
             Ok::<(), anyhow::Error>(())
         })
         .detach();
-    }
-}
-
-impl Inbox {
-    pub fn new(state: Entity<crate::app::AppState>, cx: &mut Context<Self>) -> Inbox {
-        cx.observe(&state, |this, state, cx| {
-            if state.read(cx).temp_email.is_some() {
-                this.refresh(cx);
-            }
-        })
-        .detach();
-
-        Self {
-            emails: Vec::new(),
-
-            loading: false,
-
-            state,
-        }
     }
 }
 
