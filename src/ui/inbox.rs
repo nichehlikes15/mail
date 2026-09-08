@@ -1,5 +1,5 @@
 use crate::app::AppState;
-use crate::{models::{Email, get_mail},};
+use crate::models::{Email, Theme, get_mail};
 use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb, svg};
 use reqwest_eventsource::{Event, EventSource};
 use futures_util::StreamExt;
@@ -8,14 +8,16 @@ pub struct Inbox {
     pub emails: Vec<Email>,
     pub loading: bool,
     pub state: Entity<AppState>,
+    pub theme: Theme,
 }
 
 impl Inbox {
-    pub fn new(state: Entity<AppState>, cx: &mut Context<Self>) -> Inbox {
+    pub fn new(state: Entity<AppState>, theme: Theme, cx: &mut Context<Self>) -> Inbox {
         let inbox = Self {
             emails: Vec::new(),
             loading: false,
-            state: state.clone()
+            state: state.clone(),
+            theme,
         };
 
         cx.observe(&state, |this , state, cx| {
@@ -121,7 +123,7 @@ impl Render for Inbox {
         div()
             .w_full()
             .h_full()
-            .bg(rgb(0x111111))
+            .bg(rgb(self.theme.inbox_background))
             .flex()
             .flex_col()
             // Header
@@ -133,11 +135,11 @@ impl Render for Inbox {
                     .flex()
                     .items_center()
                     .border_b_1()
-                    .border_color(rgb(0x252525))
+                    .border_color(rgb(self.theme.inbox_header_border))
                     .child(
                         div()
                             .text_size(px(20.0))
-                            .text_color(rgb(0xffffff))
+                            .text_color(rgb(self.theme.inbox_header_text))
                             .child(format!(
                                 "Inbox - {}",
                                 self.state.read(cx).current_temp_email.and_then(|index| {
@@ -168,13 +170,13 @@ impl Render for Inbox {
                             .flex()
                             .items_center()
                             .border_b_1()
-                            .border_color(rgb(0x222222))
+                            .border_color(rgb(self.theme.inbox_border))
                             // Sender
                             .child(
                                 div()
                                     .w(px(400.0))
                                     .text_size(px(14.0))
-                                    .text_color(rgb(0xdce0e5))
+                                    .text_color(rgb(self.theme.inbox_text))
                                     .child(email.from.clone()),
                             )
                             // Subject
@@ -182,7 +184,7 @@ impl Render for Inbox {
                                 div()
                                     .ml_auto()
                                     .text_size(px(14.0))
-                                    .text_color(rgb(0xdce0e5))
+                                    .text_color(rgb(self.theme.inbox_text))
                                     .child(email.subject.clone()),
                             )
                             // Date

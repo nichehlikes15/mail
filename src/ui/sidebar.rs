@@ -1,8 +1,9 @@
 use gpui::{Entity, Window, div, prelude::*, px, rgb, svg};
 
-use crate::models::{create_account};
+use crate::models::{Theme, create_account};
 pub struct Sidebar {
     pub state: Entity<crate::app::AppState>,
+    pub theme: Theme,
 }
 
 impl Render for Sidebar {
@@ -13,8 +14,8 @@ impl Render for Sidebar {
                     .px(px(8.0))
                     .py(px(6.0))
                     .text_size(px(12.0))
-                    .text_color(rgb(0xaaaaaa))
-                    .bg(rgb(0x181818))
+                    .text_color(rgb(self.theme.sidebar_text))
+                    .bg(rgb(self.theme.sidebar_selected_background))
                     .child(email.address.clone())
             }).collect::<Vec<_>>();
 
@@ -23,9 +24,9 @@ impl Render for Sidebar {
             .h_full()
             .flex()
             .flex_col()
-            .bg(rgb(0x111111))
+            .bg(rgb(self.theme.sidebar_background))
             .border_l(px(1.0))
-            .border_color(rgb(0x2a2a2a))
+            .border_color(rgb(self.theme.sidebar_border))
             /* Header
             .child(
                 div()
@@ -39,7 +40,7 @@ impl Render for Sidebar {
                     .child(
                         div()
                             .text_size(px(22.0))
-                            .text_color(rgb(0xffffff))
+                            .text_color(rgb(self.theme.sidebar_header_text))
                             .child("Mail"),
                     ),
             ) */
@@ -75,13 +76,13 @@ impl Render for Sidebar {
                             .ml(px(8.0))
                             .pl(px(14.0))
                             .border_l(px(1.0))
-                            .border_color(rgb(0x3a3a3a))
+                            .border_color(rgb(self.theme.sidebar_tree_border))
                             .child(
                                 div()
                                     .px(px(8.0))
                                     .py(px(6.0))
                                     .text_size(px(12.0))
-                                    .text_color(rgb(0xaaaaaa))
+                                    .text_color(rgb(self.theme.sidebar_text))
                                     .child("oliver@gmail.com"),
                             )
                             .child(
@@ -89,7 +90,7 @@ impl Render for Sidebar {
                                     .px(px(8.0))
                                     .py(px(6.0))
                                     .text_size(px(12.0))
-                                    .text_color(rgb(0xaaaaaa))
+                                    .text_color(rgb(self.theme.sidebar_text))
                                     .child("rem@googlemail.com"),
                             ),
                     ),
@@ -107,7 +108,7 @@ impl Render for Sidebar {
                             .flex()
                             .items_center()
                             .text_size(px(14.0))
-                            .text_color(rgb(0xffffff))
+                            .text_color(rgb(self.theme.sidebar_header_text))
                             .child("Temp Emails"),
                     )
 
@@ -117,7 +118,7 @@ impl Render for Sidebar {
                             .ml(px(8.0))
                             .pl(px(14.0))
                             .border_l(px(1.0))
-                            .border_color(rgb(0x3a3a3a))
+                            .border_color(rgb(self.theme.sidebar_tree_border))
                             .children(temporary_emails),
                     ),
             )
@@ -125,7 +126,7 @@ impl Render for Sidebar {
                 div()
                     .id("generate-email")
                     .p(px(10.0))
-                    .bg(rgb(0x222222))
+                    .bg(rgb(self.theme.sidebar_button_background))
                     .cursor_pointer()
                     .on_click(root_cx.listener(move |_this, _event, _window, cx| {
                         println!("Generate temporary email clicked!");

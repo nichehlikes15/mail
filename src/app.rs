@@ -1,7 +1,7 @@
 use gpui::{App, Context, Entity, Window, WindowOptions, div, prelude::*, px, rgb, size};
 //use std::{ops::{Deref, DerefMut},sync::Arc,};
 
-use crate::models::TempEmail;
+use crate::models::{TempEmail, Theme};
 use crate::ui::{Inbox, Sidebar, TopBar};
 
 pub struct MailApp {
@@ -9,6 +9,7 @@ pub struct MailApp {
     pub topbar: Entity<TopBar>,
     pub inbox: Entity<Inbox>,
     pub state: Entity<AppState>,
+    pub theme: Theme,
 }
 
 #[derive(Clone, Debug)]
@@ -35,19 +36,22 @@ impl MailApp {
                 ..Default::default()
             },
             |_, cx| {
+                let theme = Theme::load();
                 let state = cx.new(|_| AppState { temp_email: Vec::new(), current_temp_email: None,});
                 let sidebar = cx.new(|_| Sidebar {
                     state: state.clone(),
+                    theme,
                 });
-                let topbar = cx.new(|_| TopBar);
+                let topbar = cx.new(|_| TopBar { theme });
 
-                let inbox = cx.new(|cx| Inbox::new(state.clone(), cx));
+                let inbox = cx.new(|cx| Inbox::new(state.clone(), theme, cx));
 
                 cx.new(|_| MailApp {
                     sidebar,
                     topbar,
                     inbox,
-                    state
+                    state,
+                    theme,
                 })
             },
         )
@@ -59,8 +63,8 @@ impl Render for MailApp {
     fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .size_full()
-            .bg(rgb(0x000000))
-            .text_color(rgb(0xffffff))
+            .bg(rgb(self.theme.inbox_background))
+            .text_color(rgb(self.theme.inbox_text))
             .font_family("Lilex")
             .flex()
             .flex_col()
