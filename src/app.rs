@@ -47,7 +47,7 @@ impl MailApp {
                     sidebar,
                     topbar,
                     inbox,
-                    state,
+                    state
                 })
             },
         )

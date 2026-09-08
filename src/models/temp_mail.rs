@@ -89,8 +89,6 @@ pub async fn create_account() -> Result<TempEmail, Box<dyn std::error::Error>> {
         return Err(format!("Failed to create account: {} - {}", status, body).into());
     }
 
-
-
     let token_response = client
         .post("https://api.mail.tm/token")
         .json(&json!({

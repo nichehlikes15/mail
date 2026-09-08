@@ -7,3 +7,5 @@
 - Hover effects
 - Imcoming email notfication (Customizamble per emaill)
 - Add alerts
+- Add working themes
+- Add theme upload/download
