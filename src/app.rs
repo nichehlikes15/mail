@@ -16,6 +16,15 @@ pub struct MailApp {
 pub struct AppState {
     pub temp_email: Vec<TempEmail>, 
     pub current_temp_email: Option<usize>,
+    pub selected_sidebar_email: Option<SidebarEmail>,
+    pub creating_temp_email: bool,
+    pub temp_email_spinner_frame: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SidebarEmail {
+    Mail(usize),
+    Temp(usize),
 }
 
 impl MailApp {
@@ -37,14 +46,21 @@ impl MailApp {
             },
             |_, cx| {
                 let theme = Theme::load();
-                let state = cx.new(|_| AppState { temp_email: Vec::new(), current_temp_email: None,});
+                let state = cx.new(|_| AppState {
+                    temp_email: Vec::new(),
+                    current_temp_email: None,
+                    selected_sidebar_email: None,
+                    creating_temp_email: false,
+                    temp_email_spinner_frame: 0,
+                });
                 let sidebar = cx.new(|_| Sidebar {
                     state: state.clone(),
-                    theme,
+                    theme: theme.clone(),
+                    spinner_task: None,
                 });
-                let topbar = cx.new(|_| TopBar { theme });
+                let topbar = cx.new(|_| TopBar { theme: theme.clone() });
 
-                let inbox = cx.new(|cx| Inbox::new(state.clone(), theme, cx));
+                let inbox = cx.new(|cx| Inbox::new(state.clone(), theme.clone(), cx));
 
                 cx.new(|_| MailApp {
                     sidebar,
@@ -63,8 +79,8 @@ impl Render for MailApp {
     fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .size_full()
-            .bg(rgb(self.theme.inbox_background))
-            .text_color(rgb(self.theme.inbox_text))
+            .bg(rgb(Theme::color(&self.theme.inbox_background)))
+            .text_color(rgb(Theme::color(&self.theme.inbox_text)))
             .font_family("Lilex")
             .flex()
             .flex_col()

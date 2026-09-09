@@ -1,26 +1,26 @@
 use serde::Deserialize;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Theme {
-    pub inbox_background: u32,
-    pub inbox_header_border: u32,
-    pub inbox_border: u32,
-    pub inbox_header_text: u32,
-    pub inbox_text: u32,
-    pub sidebar_background: u32,
-    pub sidebar_border: u32,
-    pub sidebar_header_text: u32,
-    pub sidebar_tree_border: u32,
-    pub sidebar_text: u32,
-    pub sidebar_selected_background: u32,
-    pub sidebar_button_background: u32,
-    pub topbar_background: u32,
-    pub topbar_active_text: u32,
-    pub topbar_active_background: u32,
-    pub topbar_inactive_text: u32,
-    pub topbar_border: u32,
-    pub topbar_hover_background: u32,
-    pub topbar_hover_text: u32,
+    pub inbox_background: String,
+    pub inbox_header_border: String,
+    pub inbox_border: String,
+    pub inbox_header_text: String,
+    pub inbox_text: String,
+    pub sidebar_background: String,
+    pub sidebar_border: String,
+    pub sidebar_header_text: String,
+    pub sidebar_tree_border: String,
+    pub sidebar_text: String,
+    pub sidebar_selected_background: String,
+    pub sidebar_button_background: String,
+    pub topbar_background: String,
+    pub topbar_active_text: String,
+    pub topbar_active_background: String,
+    pub topbar_inactive_text: String,
+    pub topbar_border: String,
+    pub topbar_hover_background: String,
+    pub topbar_hover_text: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -81,30 +81,30 @@ impl Theme {
             .expect("The dark theme must define a style");
 
         Self {
-            inbox_background: parse_color(&colors.inbox_background),
-            inbox_header_border: parse_color(&colors.inbox_header_border),
-            inbox_border: parse_color(&colors.inbox_border),
-            inbox_header_text: parse_color(&colors.inbox_header_text),
-            inbox_text: parse_color(&colors.inbox_text),
-            sidebar_background: parse_color(&colors.sidebar_background),
-            sidebar_border: parse_color(&colors.sidebar_border),
-            sidebar_header_text: parse_color(&colors.sidebar_header_text),
-            sidebar_tree_border: parse_color(&colors.sidebar_tree_border),
-            sidebar_text: parse_color(&colors.sidebar_text),
-            sidebar_selected_background: parse_color(&colors.sidebar_selected_background),
-            sidebar_button_background: parse_color(&colors.sidebar_button_background),
-            topbar_background: parse_color(&colors.topbar_background),
-            topbar_active_text: parse_color(&colors.topbar_active_text),
-            topbar_active_background: parse_color(&colors.topbar_active_background),
-            topbar_inactive_text: parse_color(&colors.topbar_inactive_text),
-            topbar_border: parse_color(&colors.topbar_border),
-            topbar_hover_background: parse_color(&colors.topbar_hover_background),
-            topbar_hover_text: parse_color(&colors.topbar_hover_text),
+            inbox_background: colors.inbox_background,
+            inbox_header_border: colors.inbox_header_border,
+            inbox_border: colors.inbox_border,
+            inbox_header_text: colors.inbox_header_text,
+            inbox_text: colors.inbox_text,
+            sidebar_background: colors.sidebar_background,
+            sidebar_border: colors.sidebar_border,
+            sidebar_header_text: colors.sidebar_header_text,
+            sidebar_tree_border: colors.sidebar_tree_border,
+            sidebar_text: colors.sidebar_text,
+            sidebar_selected_background: colors.sidebar_selected_background,
+            sidebar_button_background: colors.sidebar_button_background,
+            topbar_background: colors.topbar_background,
+            topbar_active_text: colors.topbar_active_text,
+            topbar_active_background: colors.topbar_active_background,
+            topbar_inactive_text: colors.topbar_inactive_text,
+            topbar_border: colors.topbar_border,
+            topbar_hover_background: colors.topbar_hover_background,
+            topbar_hover_text: colors.topbar_hover_text,
         }
     }
-}
 
-fn parse_color(value: &str) -> u32 {
-    u32::from_str_radix(value.trim_start_matches("0x"), 16)
-        .unwrap_or_else(|_| panic!("Invalid theme color: {value}"))
+    pub fn color(value: &str) -> u32 {
+        u32::from_str_radix(value.trim_start_matches('#'), 16)
+            .unwrap_or_else(|_| panic!("Invalid theme color: {value}"))
+    }
 }

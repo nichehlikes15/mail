@@ -4,27 +4,27 @@
     "author": "W",
     "style": [
         {
-            "inbox-background": "0x111111",
-            "inbox-header-border": "0x252525",
-            "inbox-border": "0x222222",
-            "inbox-header-text": "0xffffff",
-            "inbox-text": "0xdce0e5",
+            "inbox-background": "#121212",
+            "inbox-header-border": "#252525",
+            "inbox-border": "#222222",
+            "inbox-header-text": "#FFFFFF",
+            "inbox-text": "#DCE0E5",
 
-            "sidebar-background": "0x111111",
-            "sidebar-border": "0x2a2a2a",
-            "sidebar-header-text": "0xffffff",
-            "sidebar-tree-border": "0x3a3a3a",
-            "sidebar-text": "0xaaaaaa",
-            "sidebar-selected-background": "0x181818",
-            "sidebar-button-background": "0x222222",
+            "sidebar-background": "#111111",
+            "sidebar-border": "#2A2A2A",
+            "sidebar-header-text": "#FFFFFF",
+            "sidebar-tree-border": "#3A3A3A",
+            "sidebar-text": "#AAAAAA",
+            "sidebar-selected-background": "#181818",
+            "sidebar-button-background": "#222222",
 
-            "topbar-background": "0x181818",
-            "topbar-active-text": "0xffffff",
-            "topbar-active-background": "0x111111",
-            "topbar-inactive-text": "0xaaaaaa",
-            "topbar-border": "0x464B57",
-            "topbar-hover-background": "0x202020",
-            "topbar-hover-text": "0xd0d0d0"
+            "topbar-background": "#181818",
+            "topbar-active-text": "#FFFFFF",
+            "topbar-active-background": "#111111",
+            "topbar-inactive-text": "#AAAAAA",
+            "topbar-border": "#464B57",
+            "topbar-hover-background": "#202020",
+            "topbar-hover-text": "#D0D0D0"
         }
     ]
 }

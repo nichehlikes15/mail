@@ -1,0 +1,30 @@
+{
+    "name": "Full Light",
+    "appearance": "light",
+    "author": "W",
+    "style": [
+        {
+            "inbox-background": "#F7F8FA",
+            "inbox-header-border": "#DFE2E6",
+            "inbox-border": "#D5D8DC",
+            "inbox-header-text": "#17191C",
+            "inbox-text": "#454A56",
+
+            "sidebar-background": "#F1F3F5",
+            "sidebar-border": "#D5D8DC",
+            "sidebar-header-text": "#17191C",
+            "sidebar-tree-border": "#C5C9CE",
+            "sidebar-text": "#5C626B",
+            "sidebar-selected-background": "#E4E7EB",
+            "sidebar-button-background": "#DFE2E6",
+
+            "topbar-background": "#E9EBEE",
+            "topbar-active-text": "#17191C",
+            "topbar-active-background": "#F7F8FA",
+            "topbar-inactive-text": "#6B7078",
+            "topbar-border": "#C5C9CE",
+            "topbar-hover-background": "#DFE2E6",
+            "topbar-hover-text": "#30343A"
+        }
+    ]
+}

@@ -1,6 +1,6 @@
 use crate::app::AppState;
 use crate::models::{Email, Theme, get_mail};
-use gpui::{Context, Entity, Render, Window, div, prelude::*, px, rgb, svg};
+use gpui::{Context, Entity, Render, Task, Window, div, prelude::*, px, rgb, svg};
 use reqwest_eventsource::{Event, EventSource};
 use futures_util::StreamExt;
 
@@ -9,6 +9,8 @@ pub struct Inbox {
     pub loading: bool,
     pub state: Entity<AppState>,
     pub theme: Theme,
+    mail_task: Option<Task<Result<(), anyhow::Error>>>,
+    active_account_id: Option<String>,
 }
 
 impl Inbox {
@@ -18,6 +20,8 @@ impl Inbox {
             loading: false,
             state: state.clone(),
             theme,
+            mail_task: None,
+            active_account_id: None,
         };
 
         cx.observe(&state, |this , state, cx| {
@@ -28,7 +32,15 @@ impl Inbox {
             };
 
             if let Some(account) = account {
-                this.start_mail_listener(account, cx);
+                if this.active_account_id.as_deref() != Some(account.id.as_str()) {
+                    this.start_mail_listener(account, cx);
+                }
+            } else {
+                this.mail_task = None;
+                this.active_account_id = None;
+                this.emails.clear();
+                this.loading = false;
+                cx.notify();
             }
         })
         .detach();
@@ -37,16 +49,17 @@ impl Inbox {
     }
 
     fn start_mail_listener(&mut self, account: crate::models::TempEmail, cx: &mut Context<Self>) {
+        self.mail_task = None;
+        self.active_account_id = Some(account.id.clone());
+        self.emails.clear();
         self.loading = true;
         cx.notify();
 
-        let state = self.state.clone();
-
-        cx.spawn(async move |this, cx| {
+        let task = cx.spawn(async move |this, cx| {
             match get_mail(&account).await {
                 Ok(emails) => {
                     this.update(cx, |inbox, cx| {
-                        inbox.emails = emails;
+                        inbox.merge_emails(emails);
                         inbox.loading = false;
                         cx.notify();
                     })?;
@@ -92,7 +105,7 @@ impl Inbox {
                         match get_mail(&account).await {
                             Ok(emails) => {
                                 this.update(cx, |inbox, cx| {
-                                    inbox.emails = emails;
+                                    inbox.merge_emails(emails);
                                     inbox.loading = false;
                                     cx.notify();
                                 })?;
@@ -111,10 +124,23 @@ impl Inbox {
             }
             println!("Mercure connection closed");
 
-            let _ = state;
             Ok::<(), anyhow::Error>(())
-        })
-        .detach();
+        });
+
+        self.mail_task = Some(task);
+    }
+
+    fn merge_emails(&mut self, emails: Vec<Email>) {
+        for email in emails {
+            if let Some(existing) = self.emails.iter_mut().find(|existing| existing.id == email.id) {
+                *existing = email;
+            } else {
+                self.emails.push(email);
+            }
+        }
+
+        self.emails
+            .sort_by(|left, right| right.created_at.cmp(&left.created_at));
     }
 }
 
@@ -123,7 +149,7 @@ impl Render for Inbox {
         div()
             .w_full()
             .h_full()
-            .bg(rgb(self.theme.inbox_background))
+            .bg(rgb(Theme::color(&self.theme.inbox_background)))
             .flex()
             .flex_col()
             // Header
@@ -135,11 +161,11 @@ impl Render for Inbox {
                     .flex()
                     .items_center()
                     .border_b_1()
-                    .border_color(rgb(self.theme.inbox_header_border))
+                    .border_color(rgb(Theme::color(&self.theme.inbox_header_border)))
                     .child(
                         div()
                             .text_size(px(20.0))
-                            .text_color(rgb(self.theme.inbox_header_text))
+                            .text_color(rgb(Theme::color(&self.theme.inbox_header_text)))
                             .child(format!(
                                 "Inbox - {}",
                                 self.state.read(cx).current_temp_email.and_then(|index| {
@@ -170,13 +196,13 @@ impl Render for Inbox {
                             .flex()
                             .items_center()
                             .border_b_1()
-                            .border_color(rgb(self.theme.inbox_border))
+                            .border_color(rgb(Theme::color(&self.theme.inbox_border)))
                             // Sender
                             .child(
                                 div()
                                     .w(px(400.0))
                                     .text_size(px(14.0))
-                                    .text_color(rgb(self.theme.inbox_text))
+                                    .text_color(rgb(Theme::color(&self.theme.inbox_text)))
                                     .child(email.from.clone()),
                             )
                             // Subject
@@ -184,7 +210,7 @@ impl Render for Inbox {
                                 div()
                                     .ml_auto()
                                     .text_size(px(14.0))
-                                    .text_color(rgb(self.theme.inbox_text))
+                                    .text_color(rgb(Theme::color(&self.theme.inbox_text)))
                                     .child(email.subject.clone()),
                             )
                             // Date

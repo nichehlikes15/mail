@@ -1,5 +1,5 @@
 [package]
-name = "mail"
+name = "mailbox"
 version = "0.1.0"
 edition = "2024"
 
@@ -21,3 +21,4 @@ serde_json = "1.0.151"
 anyhow = "1.0.104"
 reqwest-eventsource = "0.6.0"
 futures-util = "0.3.34"
+rust-embed = "8.12.0"

@@ -7,3 +7,6 @@
 - Add alerts
 - Add working themes
 - Add theme upload/download
+- Add config button for theme
+- View inbox mail
+- Add clickable emails
