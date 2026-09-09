@@ -1,9 +1,9 @@
 - Macros (Background, Scheladed Emails e.g)
-- Folders
+- Folder
 - Add images/svg to titles
 - Gmail/Yahoo Oauth
 - Hover effects
 - Imcoming email notfication (Customizamble per emaill)
 - Add alerts
-- Add working themes
 - Add theme upload/download
+- add light theme
