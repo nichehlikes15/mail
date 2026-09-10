@@ -1,5 +1,6 @@
 use crate::app::AppState;
 use crate::models::{Email, Theme, get_mail};
+use crate::ui::EmailView;
 use gpui::{Context, Entity, Render, Task, Window, div, prelude::*, px, rgb, svg};
 use reqwest_eventsource::{Event, EventSource};
 use futures_util::StreamExt;
@@ -9,17 +10,19 @@ pub struct Inbox {
     pub loading: bool,
     pub state: Entity<AppState>,
     pub theme: Theme,
+    pub email_view: Entity<EmailView>,
     mail_task: Option<Task<Result<(), anyhow::Error>>>,
     active_account_id: Option<String>,
 }
 
 impl Inbox {
-    pub fn new(state: Entity<AppState>, theme: Theme, cx: &mut Context<Self>) -> Inbox {
+    pub fn new(state: Entity<AppState>, email_view: Entity<EmailView>, theme: Theme, cx: &mut Context<Self>) -> Inbox {
         let inbox = Self {
             emails: Vec::new(),
             loading: false,
             state: state.clone(),
             theme,
+            email_view,
             mail_task: None,
             active_account_id: None,
         };
@@ -28,7 +31,7 @@ impl Inbox {
             let account = {
                 let state = state.read(cx);
 
-                state.current_temp_email.and_then(|index| state.temp_email.get(index)).cloned()
+                state.selected_email.and_then(|index| state.temp_email.get(index)).cloned()
             };
 
             if let Some(account) = account {
@@ -39,6 +42,12 @@ impl Inbox {
                 this.mail_task = None;
                 this.active_account_id = None;
                 this.emails.clear();
+                this.email_view.update(cx, |email_view, _cx| {
+                    email_view.email = None;
+                });
+                state.update(cx, |state, _cx| {
+                    state.selected_message = None;
+                });
                 this.loading = false;
                 cx.notify();
             }
@@ -52,6 +61,12 @@ impl Inbox {
         self.mail_task = None;
         self.active_account_id = Some(account.id.clone());
         self.emails.clear();
+        self.email_view.update(cx, |email_view, _cx| {
+            email_view.email = None;
+        });
+        self.state.update(cx, |state, _cx| {
+            state.selected_message = None;
+        });
         self.loading = true;
         cx.notify();
 
@@ -168,7 +183,7 @@ impl Render for Inbox {
                             .text_color(rgb(Theme::color(&self.theme.inbox_header_text)))
                             .child(format!(
                                 "Inbox - {}",
-                                self.state.read(cx).current_temp_email.and_then(|index| {
+                                self.state.read(cx).selected_email.and_then(|index| {
                                         self.state.read(cx).temp_email.get(index).map(|email| email.address.as_str())
                                     })
                                     .unwrap_or("")
@@ -197,6 +212,22 @@ impl Render for Inbox {
                             .items_center()
                             .border_b_1()
                             .border_color(rgb(Theme::color(&self.theme.inbox_border)))
+                            .id(format!("email-{}", email.id))
+                            .cursor_pointer()
+                            .on_click({
+                                let state = self.state.clone();
+                                let email_view = self.email_view.clone();
+                                let email = email.clone();
+                                move |_event, _window, cx| {
+                                    email_view.update(cx, |email_view, _cx| {
+                                        email_view.email = Some(email.clone());
+                                    });
+                                    state.update(cx, |state, cx| {
+                                        state.selected_message = Some(email.clone());
+                                        cx.notify();
+                                    });
+                                }
+                            })
                             // Sender
                             .child(
                                 div()

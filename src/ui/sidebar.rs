@@ -33,7 +33,7 @@ impl Render for Sidebar {
                     .cursor_pointer()
                     .on_click(move |_event, _window, cx| {
                         app_state.update(cx, |state, cx| {
-                            state.current_temp_email = Some(index);
+                            state.selected_email = Some(index);
                             state.selected_sidebar_email = Some(SidebarEmail::Temp(index));
                             cx.notify();
                         });

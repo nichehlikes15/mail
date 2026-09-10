@@ -5,8 +5,8 @@
 - Hover effects
 - Imcoming email notfication (Customizamble per emaill)
 - Add alerts
-- Add working themes
 - Add theme upload/download
 - Add config button for theme
-- View inbox mail
 - Add clickable emails
+
+- Add another top bar for permantent buttons e.g settings, icon, update, close, minmize
