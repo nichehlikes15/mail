@@ -18,7 +18,15 @@
             "sidebar-selected-background": "#181818",
             "sidebar-button-background": "#222222",
 
-            "topbar-background": "#181818",
+            "mailtopbar-background": "#181818",
+            "mailtopbar-active-text": "#FFFFFF",
+            "mailtopbar-active-background": "#111111",
+            "mailtopbar-inactive-text": "#AAAAAA",
+            "mailtopbar-border": "#464B57",
+            "mailtopbar-hover-background": "#202020",
+            "mailtopbar-hover-text": "#D0D0D0",
+
+            "topbar-background": "#252525",
             "topbar-active-text": "#FFFFFF",
             "topbar-active-background": "#111111",
             "topbar-inactive-text": "#AAAAAA",

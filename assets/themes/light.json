@@ -18,7 +18,15 @@
             "sidebar-selected-background": "#E4E7EB",
             "sidebar-button-background": "#DFE2E6",
 
-            "topbar-background": "#E9EBEE",
+            "mailtopbar-background": "#E9EBEE",
+            "mailtopbar-active-text": "#17191C",
+            "mailtopbar-active-background": "#F7F8FA",
+            "mailtopbar-inactive-text": "#6B7078",
+            "mailtopbar-border": "#C5C9CE",
+            "mailtopbar-hover-background": "#DFE2E6",
+            "mailtopbar-hover-text": "#30343A",
+
+            "topbar-background": "#F1F3F5",
             "topbar-active-text": "#17191C",
             "topbar-active-background": "#F7F8FA",
             "topbar-inactive-text": "#6B7078",

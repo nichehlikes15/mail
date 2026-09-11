@@ -14,6 +14,13 @@ pub struct Theme {
     pub sidebar_text: String,
     pub sidebar_selected_background: String,
     pub sidebar_button_background: String,
+    pub mailtopbar_background: String,
+    pub mailtopbar_active_text: String,
+    pub mailtopbar_active_background: String,
+    pub mailtopbar_inactive_text: String,
+    pub mailtopbar_border: String,
+    pub mailtopbar_hover_background: String,
+    pub mailtopbar_hover_text: String,
     pub topbar_background: String,
     pub topbar_active_text: String,
     pub topbar_active_background: String,
@@ -54,6 +61,20 @@ struct ThemeColors {
     sidebar_selected_background: String,
     #[serde(rename = "sidebar-button-background")]
     sidebar_button_background: String,
+    #[serde(rename = "mailtopbar-background")]
+    mailtopbar_background: String,
+    #[serde(rename = "mailtopbar-active-text")]
+    mailtopbar_active_text: String,
+    #[serde(rename = "mailtopbar-active-background")]
+    mailtopbar_active_background: String,
+    #[serde(rename = "mailtopbar-inactive-text")]
+    mailtopbar_inactive_text: String,
+    #[serde(rename = "mailtopbar-border")]
+    mailtopbar_border: String,
+    #[serde(rename = "mailtopbar-hover-background")]
+    mailtopbar_hover_background: String,
+    #[serde(rename = "mailtopbar-hover-text")]
+    mailtopbar_hover_text: String,
     #[serde(rename = "topbar-background")]
     topbar_background: String,
     #[serde(rename = "topbar-active-text")]
@@ -93,6 +114,13 @@ impl Theme {
             sidebar_text: colors.sidebar_text,
             sidebar_selected_background: colors.sidebar_selected_background,
             sidebar_button_background: colors.sidebar_button_background,
+            mailtopbar_background: colors.mailtopbar_background,
+            mailtopbar_active_text: colors.mailtopbar_active_text,
+            mailtopbar_active_background: colors.mailtopbar_active_background,
+            mailtopbar_inactive_text: colors.mailtopbar_inactive_text,
+            mailtopbar_border: colors.mailtopbar_border,
+            mailtopbar_hover_background: colors.mailtopbar_hover_background,
+            mailtopbar_hover_text: colors.mailtopbar_hover_text,
             topbar_background: colors.topbar_background,
             topbar_active_text: colors.topbar_active_text,
             topbar_active_background: colors.topbar_active_background,

@@ -70,7 +70,7 @@ impl Render for Sidebar {
                                     .items_center()
                                     .justify_center()
                                     .text_size(px(17.5))
-                                    .text_color(rgb(Theme::color(&self.theme.topbar_inactive_text)))
+                                    .text_color(rgb(Theme::color(&self.theme.mailtopbar_inactive_text)))
                                     .child("+"),
                             ),
                     )
@@ -145,7 +145,7 @@ impl Render for Sidebar {
                                     .items_center()
                                     .justify_center()
                                     .text_size(px(17.5))
-                                    .text_color(rgb(Theme::color(&self.theme.topbar_inactive_text)))
+                                    .text_color(rgb(Theme::color(&self.theme.mailtopbar_inactive_text)))
                                     .child(if creating_temp_email {
                                         [".", "..", "..."][spinner_frame]
                                     } else {

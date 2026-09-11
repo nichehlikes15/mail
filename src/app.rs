@@ -1,11 +1,12 @@
 use gpui::{App, Context, Entity, Window, WindowOptions, div, prelude::*, px, rgb, size};
 
 use crate::models::{Email, TempEmail, Theme};
-use crate::ui::{EmailView, Inbox, Sidebar, TopBar};
+use crate::ui::{EmailView, Inbox, Sidebar, TopBar, MailTopBar};
 
 pub struct MailApp {
     pub sidebar: Entity<Sidebar>,
     pub topbar: Entity<TopBar>,
+    pub mailtopbar: Entity<MailTopBar>,
     pub inbox: Entity<Inbox>,
     pub email_view: Entity<EmailView>,
     pub state: Entity<AppState>,
@@ -61,6 +62,7 @@ impl MailApp {
                     spinner_task: None,
                 });
                 let topbar = cx.new(|_| TopBar { theme: theme.clone() });
+                let mailtopbar = cx.new(|_| MailTopBar { theme: theme.clone() });
 
                 let email_view = cx.new(|_| EmailView::new(state.clone(), theme.clone()));
                 let inbox = cx.new(|cx| Inbox::new(state.clone(), email_view.clone(), theme.clone(), cx));
@@ -68,6 +70,7 @@ impl MailApp {
                 cx.new(|_| MailApp {
                     sidebar,
                     topbar,
+                    mailtopbar,
                     inbox,
                     email_view,
                     state,
@@ -100,7 +103,18 @@ impl Render for MailApp {
                     .flex_1()
                     .w_full()
                     .flex()
-                    .child(content)
+                    .child(
+                        div()
+                            .flex_1()
+                            .flex_col()
+                            .child(self.mailtopbar.clone())
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .w_full()
+                                    .child(content),
+                            ),
+                    )
                     .child(self.sidebar.clone()),
             )
     }
