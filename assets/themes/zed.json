@@ -1,0 +1,38 @@
+{
+    "name": "Zed",
+    "appearance": "zed",
+    "author": "W",
+    "style": [
+        {
+            "inbox-background": "#282c33",
+            "inbox-header-border": "#464b57",
+            "inbox-border": "#464b57",
+            "inbox-header-text": "#dce0e5",
+            "inbox-text": "#dce0e5",
+
+            "sidebar-background": "#2f343e",
+            "sidebar-border": "#464b57",
+            "sidebar-header-text": "#dce0e5",
+            "sidebar-tree-border": "#464b57",
+            "sidebar-text": "#5C626B",
+            "sidebar-selected-background": "#E4E7EB",
+            "sidebar-button-background": "#2f343e",
+
+            "mailtopbar-background": "#2f343e",
+            "mailtopbar-active-text": "#dce0e5",
+            "mailtopbar-active-background": "#282c33",
+            "mailtopbar-inactive-text": "#a9afbc",
+            "mailtopbar-border": "#464b57",
+            "mailtopbar-hover-background": "#2f343e",
+            "mailtopbar-hover-text": "#30343A",
+
+            "topbar-background": "#3b414d",
+            "topbar-active-text": "#dce0e5",
+            "topbar-active-background": "#282c33",
+            "topbar-inactive-text": "#6B7078",
+            "topbar-border": "#464b57",
+            "topbar-hover-background": "#2f343e",
+            "topbar-hover-text": "#30343A"
+        }
+    ]
+}

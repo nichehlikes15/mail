@@ -1,7 +1,7 @@
 use crate::app::AppState;
 use crate::models::{Email, Theme, get_mail};
 use crate::ui::EmailView;
-use gpui::{Context, Entity, Render, Task, Window, div, prelude::*, px, rgb, svg};
+use gpui::{Context, Entity, Render, Task, Window, div, prelude::*, px, rgb};
 use reqwest_eventsource::{Event, EventSource};
 use futures_util::StreamExt;
 
@@ -167,8 +167,8 @@ impl Render for Inbox {
             .bg(rgb(Theme::color(&self.theme.inbox_background)))
             .flex()
             .flex_col()
-            // Header
-            .child(
+  
+            /*.child(
                 div()
                     .w_full()
                     .h(px(64.0))
@@ -189,70 +189,99 @@ impl Render for Inbox {
                                     .unwrap_or("")
                             )),
                     )
-                    /*.child(
-                        svg()
-                            .path(include_str!("../../assets/images/email.svg"))
-                            .w(px(18.0))
-                            .h(px(18.0)),
-                    ),*/
-            )
-            // Email list
+            )*/
+
             .child(
                 div()
                     .w_full()
                     .flex_1()
                     .flex()
                     .flex_col()
-                    .children(self.emails.iter().map(|email| {
-                        div()
-                            .w_full()
-                            .h(px(64.0))
-                            .px(px(24.0))
-                            .flex()
+
+                    .when(self.state.read(cx).selected_email.is_none(), |this| {
+                        this
+                        .items_center()
+                        .justify_center()
+                        .child(
+                            div()
+                                .text_size(px(14.0))
+                                .text_color(rgb(0x777777))
+                                .child("Select an inbox"),
+                        )
+                    })
+
+
+                    .when(
+                        self.state.read(cx).selected_email.is_some() && self.emails.is_empty(),|this| {
+                            this
                             .items_center()
-                            .border_b_1()
-                            .border_color(rgb(Theme::color(&self.theme.inbox_border)))
-                            .id(format!("email-{}", email.id))
-                            .cursor_pointer()
-                            .on_click({
-                                let state = self.state.clone();
-                                let email_view = self.email_view.clone();
-                                let email = email.clone();
-                                move |_event, _window, cx| {
-                                    email_view.update(cx, |email_view, _cx| {
-                                        email_view.email = Some(email.clone());
-                                    });
-                                    state.update(cx, |state, cx| {
-                                        state.selected_message = Some(email.clone());
-                                        cx.notify();
-                                    });
-                                }
-                            })
-                            // Sender
+                            .justify_center()
                             .child(
                                 div()
-                                    .w(px(400.0))
                                     .text_size(px(14.0))
-                                    .text_color(rgb(Theme::color(&self.theme.inbox_text)))
-                                    .child(email.from.clone()),
-                            )
-                            // Subject
-                            .child(
-                                div()
-                                    .ml_auto()
-                                    .text_size(px(14.0))
-                                    .text_color(rgb(Theme::color(&self.theme.inbox_text)))
-                                    .child(email.subject.clone()),
-                            )
-                            // Date
-                            /*.child(
-                                div()
-                                    .w(px(100.0))
                                     .text_color(rgb(0x777777))
-                                    .child(email.created_at.clone())
-                            )*/
-                            .into_any_element()
-                    })),
+                                    .child("No messages"),
+                            )
+                        },
+                    )
+
+                    .when(self.state.read(cx).selected_email.is_some() && !self.emails.is_empty(),|this| {
+                        this.children(self.emails.iter().map(|email| {
+                            div()
+                                .w_full()
+                                .h(px(64.0))
+                                .px(px(24.0))
+                                .flex()
+                                .items_center()
+                                .border_b_1()
+                                .border_color(rgb(Theme::color(&self.theme.inbox_border)))
+                                .id(format!("email-{}", email.id))
+                                .cursor_pointer()
+                                
+                                .on_click({
+                                    let state = self.state.clone();
+                                    let email_view = self.email_view.clone();
+                                    let email = email.clone();
+                                    
+                                    move |_event, _window, cx| {
+                                        email_view.update(cx, |email_view, _cx| {
+                                            email_view.email = Some(email.clone());
+                                        });
+                                        state.update(cx, |state, cx| {
+                                            state.selected_message = Some(email.clone());
+                                            cx.notify();
+                                        });
+                                    }
+                                })
+
+                                // Sender
+                                .child(
+                                    div()
+                                        .w(px(400.0))
+                                        .text_size(px(14.0))
+                                        .text_color(rgb(Theme::color(&self.theme.inbox_text)))
+                                        .child(email.from.clone()),
+                                )
+
+                                // Subject
+                                .child(
+                                    div()
+                                        .ml_auto()
+                                        .text_size(px(14.0))
+                                        .text_color(rgb(Theme::color(&self.theme.inbox_text)))
+                                        .child(email.subject.clone()),
+                                )
+
+                                // Date
+                                /*.child(
+                                    div()
+                                        .w(px(100.0))
+                                        .text_color(rgb(0x777777))
+                                        .child(email.created_at.clone())
+                                )*/
+                                .into_any_element()
+                        }))
+                    }),
             )
     }
 }

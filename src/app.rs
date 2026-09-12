@@ -1,4 +1,4 @@
-use gpui::{App, Context, Entity, Window, WindowOptions, div, prelude::*, px, rgb, size};
+use gpui::{App, Context, Entity, TitlebarOptions, Window, WindowOptions, div, prelude::*, px, rgb, size};
 
 use crate::models::{Email, TempEmail, Theme};
 use crate::ui::{EmailView, Inbox, Sidebar, TopBar, MailTopBar};
@@ -44,6 +44,13 @@ impl MailApp {
                     size(px(1200.0), px(800.0)),
                     cx,
                 ))),
+
+                titlebar: Some(TitlebarOptions {
+                    title: Some("Mail".into()),
+                    appears_transparent: true,
+                    ..Default::default()
+                }),
+
                 ..Default::default()
             },
             |_, cx| {

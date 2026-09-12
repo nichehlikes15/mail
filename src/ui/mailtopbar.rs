@@ -13,9 +13,7 @@ impl Render for MailTopBar {
             .flex()
             .items_center()
             .bg(rgb(Theme::color(&self.theme.mailtopbar_background)))
-            //.border_b(px(1.0))
-            //.border_color(rgb(0x2a2a2a))
-            // Active Selection
+
             .child(
                 div()
                     .h_full()
@@ -31,7 +29,7 @@ impl Render for MailTopBar {
                     .border_r(px(1.0))
                     .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))),
             )
-            // Account 2
+
             .child(
                 div()
                     .h_full()
@@ -43,13 +41,9 @@ impl Render for MailTopBar {
                     .child("starred")
                     .border_b(px(1.0))
                     .border_r(px(1.0))
-                    .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))), /*.hover(|this| {
-                                                      println!("Testing");
-                                                      this.bg(rgb(0x202020))
-                                                          .text_color(rgb(0xd0d0d0))
-                                                  }),*/
+                    .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))),
             )
-            // Account 2
+
             .child(
                 div()
                     .h_full()
@@ -63,7 +57,7 @@ impl Render for MailTopBar {
                     .border_r(px(1.0))
                     .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))),
             )
-            // Account 2
+
             .child(
                 div()
                     .h_full()
@@ -77,7 +71,7 @@ impl Render for MailTopBar {
                     .border_r(px(1.0))
                     .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))),
             )
-            // Account 2
+
             .child(
                 div()
                     .h_full()
@@ -91,7 +85,7 @@ impl Render for MailTopBar {
                     .border_r(px(1.0))
                     .border_color(rgb(Theme::color(&self.theme.mailtopbar_border))),
             )
-            // Add account button
+            
             .child(
                 div()
                     .h_full()

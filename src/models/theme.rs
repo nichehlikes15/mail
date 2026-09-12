@@ -93,7 +93,7 @@ struct ThemeColors {
 
 impl Theme {
     pub fn load() -> Self {
-        let file: ThemeFile = serde_json::from_str(include_str!("../../assets/themes/dark.json"))
+        let file: ThemeFile = serde_json::from_str(include_str!("../../assets/themes/zed.json"))
             .expect("Failed to parse the dark theme");
         let colors = file
             .style

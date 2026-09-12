@@ -15,8 +15,6 @@ impl Render for Sidebar {
         let app_state = self.state.clone();
         let mail_account_0_state = self.state.clone();
         let mail_account_1_state = self.state.clone();
-        let creating_temp_email = self.state.read(root_cx).creating_temp_email;
-        let spinner_frame = self.state.read(root_cx).temp_email_spinner_frame;
         let selected_sidebar_email = self.state.read(root_cx).selected_sidebar_email;
         let temporary_emails = self.state.read(root_cx).temp_email.iter().enumerate().map(|(index, email)| {
                 let app_state = self.state.clone();
@@ -65,13 +63,24 @@ impl Render for Sidebar {
                             .child("Mail")
                             .child(
                                 div()
-                                    .h(px(30.0))
+                                    .h(px(25.0))
+                                    .px(px(5.0))
+                                    .rounded(px(8.0))
                                     .flex()
                                     .items_center()
                                     .justify_center()
-                                    .text_size(px(17.5))
-                                    .text_color(rgb(Theme::color(&self.theme.mailtopbar_inactive_text)))
-                                    .child("+"),
+
+                                    .hover(|this| {
+                                        this.bg(rgb(0x363c46))
+                                    })
+
+                                    .child(
+                                        svg()
+                                            .data(include_bytes!("../../assets/images/add.svg"))
+                                            .text_color(rgb(Theme::color(&self.theme.topbar_active_text)))
+                                            .w(px(10.0))
+                                            .h(px(10.0)),
+                                    ),
                             ),
                     )
                     .child(
@@ -138,21 +147,22 @@ impl Render for Sidebar {
                             .text_size(px(14.0))
                             .text_color(rgb(Theme::color(&self.theme.sidebar_header_text)))
                             .child("Temp Emails")
+
                             .child(
                                 div()
-                                    .h(px(30.0))
+                                    .h(px(25.0))
+                                    .px(px(5.0))
+                                    .rounded(px(8.0))
                                     .flex()
                                     .items_center()
                                     .justify_center()
-                                    .text_size(px(17.5))
-                                    .text_color(rgb(Theme::color(&self.theme.mailtopbar_inactive_text)))
-                                    .child(if creating_temp_email {
-                                        [".", "..", "..."][spinner_frame]
-                                    } else {
-                                        "+"
+
+                                    .hover(|this| {
+                                        this.bg(rgb(0x363c46))
                                     })
                                     .id("generate-email")
                                     .cursor_pointer()
+                                    
                                     .on_click(root_cx.listener(move |this, _event, _window, cx| {
                                         if this.state.read(cx).creating_temp_email {
                                             return;
@@ -209,7 +219,14 @@ impl Render for Sidebar {
                                             Ok::<(), anyhow::Error>(())
                                         })
                                         .detach();
-                                    })),
+                                    }))
+                                    .child(
+                                        svg()
+                                            .data(include_bytes!("../../assets/images/add.svg"))
+                                            .text_color(rgb(Theme::color(&self.theme.topbar_active_text)))
+                                            .w(px(10.0))
+                                            .h(px(10.0)),
+                                    ),
                             ),
                     )
                     .child(
